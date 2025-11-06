@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="موقع تعليمي مفتوح المصدر — بسيط، خفيف، ويدعم لغات متعددة.">
+  <title>تعلم معنا — 2025/2026</title>
+  <style>
+    /* ✅ سريع: لا طلبات خارجية — الخطوط مدمجة في النظام */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: #fcfcfe;
+      margin: 0;
+      padding: 1.5rem;
+      text-align: center;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+    header {
+      max-width: 600px;
+      margin: 0 auto 2rem;
+    }
+    h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #2b6cb0;
+      margin: 0 0 0.75rem;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: #4a5568;
+    }
+    .lang-switch {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+    }
+    .lang-btn {
+      padding: 0.45rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      background: #4299e1;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .lang-btn:hover {
+      background: #3182ce;
+      transform: translateY(-1px);
+    }
+    .lang-btn.active {
+      background: #2b6cb0;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    footer {
+      margin-top: 2.5rem;
+      color: #a0aec0;
+      font-size: 0.85rem;
+    }
+    /* ✅ دعم كامل للكورية واليابانية — بدون طلب خارجي */
+    /* Noto Sans مثبت مسبقًا في أنظمة حديثة (ويندوز 10+, ماك, أندرويد, iOS) */
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="welcome-text">مرحبًا بكم في مشروع <em>learn_2025_2026</em> 🌍</h1>
+    <p class="subtitle" id="desc-text">موقع تعليمي مفتوح المصدر — بسيط، خفيف، ويدعم لغات متعددة.</p>
+  </header>
+
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="ar" title="العربية">🇸🇦</button>
+    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+    <button class="lang-btn" data-lang="ko" title="한국어">🇰🇷</button>
+    <button class="lang-btn" data-lang="ja" title="日本語">🇯🇵</button>
+    <button class="lang-btn" data-lang="pt" title="Português">🇧🇷</button>
+  </div>
+
+  <footer>
+    🛠️ مشروع تعليمي — مفتوح المصدر | <a href="https://github.com/learn_2025_2026" style="color:#4299e1; text-decoration: none;">شاركنا على GitHub</a>
+  </footer>
+
+  <script>
+    // ✅ آمن: لا استخدام لـ innerHTML إلا حيث ضروري (مثل <em>)
+    // ✅ سهل: الترجمات في كائن واحد — تغيير بسطر واحد
+    const translations = {
+      ar: { t: "تعلم معنا — 2025/2026", w: "مرحبًا بكم في مشروع <em>learn_2025_2026</em> 🌍", d: "موقع تعليمي مفتوح المصدر — بسيط، خفيف، ويدعم لغات متعددة." },
+      en: { t: "Learn With Us — 2025/2026", w: "Welcome to the <em>learn_2025_2026</em> project 🌍", d: "An open-source educational website — simple, lightweight, and multilingual." },
+      ko: { t: "함께 배우기 — 2025/2026", w: "<em>learn_2025_2026</em> 프로젝트에 오신 것을 환영합니다 🌍", d: "간단하고 가볍고 다국어를 지원하는 오픈소스 교육 웹사이트입니다." },
+      ja: { t: "一緒に学びましょう — 2025/2026", w: "<em>learn_2025_2026</em> プロジェクトへようこそ 🌍", d: "シンプルで軽量、多言語対応のオープンソース教育ウェブサイトです。" },
+      pt: { t: "Aprenda Conosco — 2025/2026", w: "Bem-vindo ao projeto <em>learn_2025_2026</em> 🌍", d: "Um site educacional de código aberto — simples, leve e multilíngue." }
+    };
+
+    function switchLang(code) {
+      const tr = translations[code] || translations.ar;
+      const root = document.getElementById('html-root');
+      
+      document.title = tr.t;
+      document.getElementById('welcome-text').innerHTML = tr.w;
+      document.getElementById('desc-text').textContent = tr.d;
+      
+      root.lang = code;
+      root.dir = code === 'ar' ? 'rtl' : 'ltr';
+
+      // تحديث الزر النشط
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === code);
+      });
+    }
+
+    // ربط الأزرار
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchLang(btn.dataset.lang));
+    });
+  </script>
+</body>
+  </html>
