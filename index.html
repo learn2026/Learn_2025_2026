@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Un site éducatif open source — simple, léger et multilingue.">
+  <title>Apprenez avec nous — 2025/2026</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: #fcfcfe;
+      margin: 0;
+      padding: 1.5rem;
+      text-align: center;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+    header {
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+    }
+    h1 {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #2b6cb0;
+      margin: 0 0 0.75rem;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: #4a5568;
+    }
+    .lang-switch {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .lang-btn {
+      padding: 0.45rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      background: #4299e1;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .lang-btn:hover {
+      background: #3182ce;
+      transform: translateY(-1px);
+    }
+    .lang-btn.active {
+      background: #2b6cb0;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    /* زر رفع الصور */
+    .upload-section {
+      background: white;
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin: 2rem auto;
+      max-width: 600px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .upload-btn {
+      background: #e53e3e;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s;
+    }
+    .upload-btn:hover {
+      background: #c53030;
+      transform: scale(1.03);
+    }
+    .result-box {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #edf2f7;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.95rem;
+      word-break: break-all;
+      display: none;
+    }
+    footer {
+      margin-top: 2rem;
+      color: #a0aec0;
+      font-size: 0.85rem;
+    }
+    .loading::after {
+      content: " ⏳";
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="welcome-text" class="loading">Chargement...</h1>
+    <p class="subtitle" id="desc-text">Veuillez patienter...</p>
+  </header>
+
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="fr" title="Français">🇫🇷</button>
+    <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+    <button class="lang-btn" data-lang="de" title="Deutsch">🇩🇪</button>
+    <button class="lang-btn" data-lang="ko" title="한국어">🇰🇷</button>
+    <button class="lang-btn" data-lang="ja" title="日本語">🇯🇵</button>
+    <button class="lang-btn" data-lang="pt" title="Português">🇧🇷</button>
+  </div>
+
+  <div class="upload-section">
+    <h2 id="upload-title">📤 Générateur de lien d'image</h2>
+    <p id="upload-desc">Obtenez un lien direct pour utiliser dans les forums.</p>
+    <button id="upload-btn" class="upload-btn">✨ Générer un lien</button>
+    <div id="result-box" class="result-box"></div>
+  </div>
+
+  <footer>
+    🛠️ Projet éducatif open source — toute contribution enrichit le contenu  
+    <a href="https://github.com/learn2026/learn_2025_2026" style="color:#4299e1; text-decoration: none;">
+      Contribuez : code, traduction, idée ou remarque 💌
+    </a>
+  </footer>
+
+  <script>
+    const LANG_FILES = {
+      fr: 'locales/fr.json',
+      en: 'locales/en.json',
+      de: 'locales/de.json',
+      ko: 'locales/ko.json',
+      ja: 'locales/ja.json',
+      pt: 'locales/pt.json'
+    };
+
+    // ✅ ترجمات خاصة بزر الرفع — مدمجة مؤقتًا (لاحقًا ننقلها لملفات locales)
+    const UPLOAD_TEXTS = {
+      fr: {
+        title: "📤 Générateur de lien d'image",
+        desc: "Obtenez un lien direct pour utiliser dans les forums.",
+        btn: "✨ Générer un lien",
+        dialog: "Nom du fichier (ex: photo1.jpg) :",
+        placeholder: "photo1.jpg",
+        resultPrefix: "[img]",
+        resultSuffix: "[/img]"
+      },
+      en: {
+        title: "📤 Image Link Generator",
+        desc: "Get a direct link to use in forums.",
+        btn: "✨ Generate Link",
+        dialog: "File name (e.g. photo1.jpg):",
+        placeholder: "photo1.jpg",
+        resultPrefix: "[img]",
+        resultSuffix: "[/img]"
+      },
+      de: {
+        title: "📤 Bild-Link-Generator",
+        desc: "Erhalten Sie einen direkten Link für Foren.",
+        btn: "✨ Link erstellen",
+        dialog: "Dateiname (z.B. foto1.jpg):",
+        placeholder: "foto1.jpg",
+        resultPrefix: "[img]",
+        resultSuffix: "[/img]"
+      },
+      ko: {
+        title: "📤 이미지 링크 생성기",
+        desc: "포럼에서 사용할 직접 링크를 얻으세요.",
+        btn: "✨ 링크 생성",
+        dialog: "파일 이름 (예: photo1.jpg):",
+        placeholder: "photo1.jpg",
+        resultPrefix: "[img]",
+        resultSuffix: "[/img]"
+      },
+      ja: {
+        title: "📤 画像リンク生成ツール",
+        desc: "フォーラムで使用する直接リンクを取得します。",
+        btn: "✨ リンクを生成",
+        dialog: "ファイル名 (例: photo1.jpg):",
+        placeholder: "photo1.jpg",
+        resultPrefix: "[img]",
+        resultSuffix: "[/img]"
+      },
+      pt: {
+        title: "📤 Gerador de link de imagem",
+        desc: "Obtenha um link direto para usar em fóruns.",
+        btn: "✨ Gerar link",
+        dialog: "Nome do arquivo (ex: foto1.jpg):",
+        placeholder: "foto1.jpg",
+        resultPrefix: "[img]",
+        resultSuffix: "[/img]"
+      }
+    };
+
+    let currentLang = 'fr';
+
+    async function loadTranslation(lang) {
+      try {
+        const res = await fetch(LANG_FILES[lang]);
+        if (!res.ok) throw new Error(`❌ ${lang}.json introuvable`);
+        return await res.json();
+      } catch (err) {
+        console.error(err);
+        return await fetch(LANG_FILES.fr).then(r => r.json());
+      }
+    }
+
+    function updateUploadUI(lang) {
+      const txt = UPLOAD_TEXTS[lang] || UPLOAD_TEXTS.fr;
+      document.getElementById('upload-title').textContent = txt.title;
+      document.getElementById('upload-desc').textContent = txt.desc;
+      document.getElementById('upload-btn').textContent = txt.btn;
+    }
+
+    async function switchLang(lang) {
+      currentLang = lang;
+      const root = document.getElementById('html-root');
+      
+      document.getElementById('welcome-text').textContent = 'Chargement...';
+      document.getElementById('desc-text').textContent = 'Veuillez patienter...';
+      document.getElementById('welcome-text').classList.add('loading');
+
+      const tr = await loadTranslation(lang);
+      
+      document.title = tr.title;
+      document.getElementById('welcome-text').innerHTML = tr.welcome;
+      document.getElementById('desc-text').textContent = tr.desc;
+      document.getElementById('welcome-text').classList.remove('loading');
+      
+      root.lang = lang;
+      root.dir = 'ltr';
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      updateUploadUI(lang);
+    }
+
+    // تشغيل زر الرفع
+    function setupUploadButton() {
+      const btn = document.getElementById('upload-btn');
+      const resultBox = document.getElementById('result-box');
+
+      btn.addEventListener('click', () => {
+        const txt = UPLOAD_TEXTS[currentLang] || UPLOAD_TEXTS.fr;
+        const fileName = prompt(txt.dialog, txt.placeholder);
+        
+        if (fileName && fileName.trim()) {
+          const cleanName = fileName.trim();
+          const url = `https://github.com/learn2026/learn_2025_2026/raw/main/uploads/${cleanName}`;
+          const bbcode = `${txt.resultPrefix}${url}${txt.resultSuffix}`;
+          
+          resultBox.textContent = bbcode;
+          resultBox.style.display = 'block';
+          
+          // نسخ تلقائي (إذا سمح المتصفح)
+          navigator.clipboard?.writeText(bbcode)
+            .then(() => console.log('✓ Copié dans le presse-papiers'))
+            .catch(() => {});
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      switchLang('fr');
+      setupUploadButton();
+      
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchLang(btn.dataset.lang));
+      });
+    });
+  </script>
+</body>
+</html>
