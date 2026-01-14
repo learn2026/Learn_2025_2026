@@ -1,0 +1,10 @@
+# netlify.toml — إعدادات خفيفة لحماية الخصوصية وتسريع النشر
+
+[build]
+  command = ""
+  publish = "/"
+
+[context.production.environment]
+  NETLIFY_ANALYTICS_DISABLED = "true"
+
+generateRobotsTxt = false
